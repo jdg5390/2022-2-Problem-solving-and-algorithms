@@ -1,5 +1,97 @@
-모든 문자열 출력 -> "" 동반한다
+#5주차
+#리스트도 벡터임
+list()  바로 요소 투입
+x<-vector(mode='list',length) 빈 리스트 생성 가능 (NULL 하나로 채움)
 
+출력1)  #리스트에  list(c('kim'),3) 형태로 넣었을 떄(요소 2개임)   // list(c('kim',3)) 이랑은 다름!!
+[[1]]
+[1] 'kim'
+[[2]]
+[1] 3
+
+출력2)  #이름 있을 떄  list(name=c('kim',3))
+$name   
+[1] 'kim' 3
+
+#리스트 인덱싱 및 추출
+list[[i]] or list$name or list[['name']] 이용 -> 벡터로 반환해줌 // list[i]는 하나의 서브리스트로 반환해줌. [1] 'kim'이 아니라  리스트라서 $name[1] or [[1]][1] 'kim'으로 나옴
+#리스트 인덱싱 시 줄임말
+최소한 다른 변수들과 구분가능한 정도까지는 적어줘야함 list$sal 아니면 NULL 나옴
+class(x[1]) -> 'list'로 나옴
+#x[1:2] x의 첫 번째 두 번째 벡터만 뽑아서 sub list로 만들 수 있음
+#x[[1:2]]는 불가능 (개별 벡터로 들어가서 요소 슬라이싱 하려면 x[[1]][1:2] 이렇게 해야함 / x[1:2][[1]] : 1,2번 리스트 가져가서 그 중 1번 리스트만 벡터로 반환
+                                                                                        !=  x[1:2][1] : 1,2번 리스트 가져가서 그 중 1번 리스트를 뽑아서 sublist로 반환
+#리스트 합치거나 추가하기
+x$name <- rep(3,5)
+y <- c(x,list(c(1,3,5)))  != y <-list(x,c(1,3,5)) 후자는 y라는 리스트가 이중리스트가 됨. 전자는 x리스트 하나랑 또다른 리스트 c(1,3,5) 하나
+#언패킹 
+x[1:2] <- c(7,3)  x의 1번 리스트를 7로, 2번 리스트를 3으로 바꿈
+#리스트 내의 벡터를 변경하는 거 말고 리스트 내의 벡터 내의 요소를 바꾸려면 인덱싱 두번 해줘야함 x[[1]][2] <- 3 : listx의 1번벡터 내의 2번 위치 요소 3으로
+
+#리스트 $a 있으면 그 다음 이름 없는 벡터는 [[1]] 이 아니라 [[2]] 가 옴! 
+#리스트 삭제 
+한 개 벡터 삭제: x[[1]] <- NULL or x$name <- NULL
+여러 벡터 삭제: x[1:3] <- NULL  :sublist 삭제하는 느낌
+#y <- unlist(x): list를 다시 벡터로 바꿔줌, 이름 있으면 named vector되며, (이때, mode 단일화됨 -> 우선순위 고려)
+이름 a라는 리스트에 요소 2개 있었으면 열이름은 a1 a2로 표기됨 이떄는 이름이 있어서 왼쪽에 [1] 없고 / names(y) <- NULL 적어줘야 원래 벡터처럼 [1]이 생김
+
+#lapply(list,function) : 리스트 내 각 벡터들에 함수 적용해서 리스트로 반환해줌 # dataframe에서는 각 열 별로 적용해서 리스트로!
+#sapply(list,function, simplify=T) : 적용하고나서 우선순위: vector(벡터별로 결과값이 1개여야함)  ->  matrix(변수벡터를 열로 해서 결과값 출력, 이때 모든 요소의 결과값이 같은 길이여야함) 
+                                                -> 둘 다 불가능하면 list 그대로 반환해줌. ex)sort 같은 경우 / 줄어들면 mode단일화적용! / simplify=F 하면 list억지로 유지 가능
+#median, mode, mean, sort(), order() 등등 있음
+#apply(array, 1:2, sum) #각 면의 1행 1열끼리, 1행 2열끼리, 1행 3열끼리, 1행 4열끼리 더해준다.  -> 결과: vector나 matrix(array)로 만듦!!! data.frame도 그래서 바뀌면서 타입 단일화 돼버림.
+
+
+#data.frame은 list이다 각 column들은 같은 자료형을 가져야함 -> 타입 단일화 일어남
+#data.frame(x=c(1,3,5),y,z,stringsAsFactors = F) x y를 가져오는 거 말고 한 번에 생성도 가능함.
+      ->  디폴트임 T해주면 문자열들이 factor로 mode가 바뀜! -> 내부적으로 1, 2, 3 정수로 하나씩 범주로 묶어서 할당함
+#str(x) -> 'data.frame': 3 obs. of 3 variables / $name: Factor w/ 3 levels "Kim" "Lee" "Park": 1 3 2    -> 알파벳 빠른 순서대로 1, 2,3 할당해서 저장하고 현재 저장된 게 kim park lee 순이라고 알려주는 것
+          / $age: num 36 15 20
+#data.frame 인덱싱하는법 1. list방식(얘는 행 인덱싱 할 수 없음) 2. matrix 방식
+#2열 인덱싱하기: (한 개면 list됨) x[[2]] <=> x[,2] list돼버림 / 단 x[2]처럼 []로 인덱싱하면 무조건 data.frame 으로 유지됨!!
+#다중 열 인덱싱하기: (두 개 이상이면 data.frame으로 유지됨) : x[2:3] <=> x[,c(2,3)]
+#matrix 방식에서는 열 하나만 extract하면 무조건 벡터 돼버림.
+#기준은 '열' 하나만 extract -> 벡터 돼버린다. 행은 하나만 extract해도 변수 다 살아있는 data.frame이다. 예외) x[2]는 열 인덱싱이지만 drop=F 쓰지 않고도 data.frame 유지 가능하다.
+#drop=F  ::  x[,2,drop=F] (matrix방식 인덱싱에 1개 열 선택했을 때 drop=F 써주는 거임) <=> x[2] 
+#subset() : NA를 가진 obs(행)를 통째로 날려버림 
+#filtering 할 때 data.frame의 obs 번호는 그대로 둬야함! 행이 아니라 n번 관측값이라서 번호 당겨지면 안 됨.
+#열 필터링 하려면 matrix 방식 써야함 x[,x[[2]]>4] 이런 식으로 x[,x[,2]>4]  / 리스트 방식도 가능함 y[y[[1]] > 4] 처럼 데이터프레임 유지하면서 열 필터링 가능
+#dataframe필터링 할 때 조건문(T,F,T)이랑 행or열 개수 주의하기!! 둘의 개수가 같아야 오류 안뜸
+#complete.cases() : Obs.(각 행) 별로 연산해서 행 개수 만큼 logcial vector로 나옴 -> dataframe x의 정상적인 행 개수를 length(complete.cases(x))로 셀 수 있다
+#관측값 추가하기
+    rbind(x,y): data.frame의 모든 열이 같은 모드를 갖는다면, matrix나 array도 data.frame에 행으로 붙일 수 있다. 기본적으론 list나 dataframe끼리 붙임.
+                                  조건) 1. 각 열에 대해서 같은 mode여야한다. 2. column name 동일해야한다. 순서달라도 알아서 맞춰서 x 밑에 y를 붙여준다. 
+#열 추가하기
+    cbind(x,y) 열끼리 붙임. 조건) 행 개수(데이터 개수)만 x와 같으면 y가 매트릭스나 벡터여도 가능함 -> 열 이름은 y로 그대로 추가됨 
+    df$추가할 변수명 = vector or matrix : 새 변수명으로 바로 열 추가 가능
+#추가할 때 변수명 설정 안 하고 df[[4]] <- c(3,5,7)로 개별 인덱싱으로 추가하면 V4로 변수명 생성됨. or 다중 인덱싱주의!! df[4:5] <- matrix(1,3,2)는 열 2개 -> V5, V6으로 열 2개 추가해야됨!!
+#그냥 [[]]에는 여러 숫자가 못 들어감 [] 에만 여러 개 들어갈 수 있음.
+#merge(x,y,by.x='b',by.y='k',all.y=T)  : x에 y를 병합하는데(변수명은 x걸로 따라감), x의 'b'열과 'k'열을 하나로 묶어서 겹치는 값들 기준으로 병합하고, y의 데이터는 NA로 다 살려라. / 두 데이터프레임만 가능
+    -> y에 다른 속성이 다른 동일한 이름의 관측값이 2개 이상 이라면, x와 병합할 때 그냥 모든 케이스 넣어주면 됨.
+#as.data.frame(x) : 변수명은 V1,V2,V3,...으로 생성된다.
+
+#as.factor(x): x를 factor로 바꿔줌! 원본 안 건드림
+#unclass(x) : x의 class를 벗겨버린다 ex) factor->벡터로, df -> list로
+#length(factor) : 요소 개수
+#length(levels(factor)) : 범주의 개수 (중복x인 집합의 원소 개수 느낌임)
+#levels(factor) : 범주를 하나의 character vector로 반환
+#빈 factor 생성하기:  x <- factor(y,levels=c('a','b',1,3,5)) 단 y는 y<-NULL로 미리 선언 돼있어야 빈factor 만들어짐
+#factor[i] 팩터 인덱싱! 벡터처럼 하면 됨!
+#levels에 없는 요소 넣으면 경고+ <NA>로 들어감
+
+#tapply(vector,factor,function): 오직 '벡터' x의 각 level범주 별로 묶어서 function 적용하기!! -> data.frame에서는 하나의 열만 vector로 넣을 수 있음!!
+  -> factor 자리에 vector 넣더라도 같은 길이면 1:1대응 시킨 다음에 factor자리에 들어간 vector의 범주별로 연산 진행해서 -> vector or matrix로 반환! (열마다 값 한 개 결과이면 named vector임!!)
+  tapply(x,list(y,z),function): 벡터 x랑 y,z를 먼저 1:1대응 시키고, y,z를 각각 팩터로 만든다음에 각각의 levels를 (y,z) 케이스로 모든 경우 묶어서 function 적용하기 -> 결과는 y의 범주가 행, z의 범주가 열! 매트릭스반환
+#by(x,factor,function) : data.frame or matrix x에 적용가능 tapply나머지는 동일. -> 반환 class(x) = "by" 인데 list 비슷한 형식임.
+#split(x,factor) : data.frame or vector x를 factor의 범주로 묶어서 list(x1=c(1,3,5),x2=c('A','B'))처럼 list로 반환
+
+
+#table(x): 벡터나 리스트인 x를 factor로 만들어서 table로 제작함. 이때 vector->factor가 이름인 table로, list->factor가 행, 열, 면 등의 이름인 table로 반환. 출력 완전 달라짐 
+      -> 리스트의 경우 3개 벡터가 들어있었으면 , , (면벡터이름) = A 부터 시작해서 array처럼 들어감
+      -> matrix나 dataframe처럼 인덱싱, 함수적용 가능!
+#addmargins(table) : 각 행,열 그리고 행+열의 Sum을 테두리에 출력함
+#dimnames(table): table의 행,열의 factor의 levels를 하나의 리스트로 (두 벡터 요소로) return함. -> x == list(vote=c('N',Y'),age20=c(0,1)) 로 만들어준다
+  -> table의 name이라는 열의 factor levels를 수정할 때 -> dimnames(table)$name <- c('Mom','Dad')로 수정가능
 
 
 
